@@ -2,6 +2,8 @@
 
 # Link to Video 
 
+<https://ucsf.box.com/s/lbjdwjcmea715s00ld8jefuon6u2ktzp>
+
 # Introduction to Data Set
 
 I retrieved the data set from Corgis and it is a e-book sales data set. It contains information about the publisher group, daily average publisher and author revenue, gross sales, book ranking, and genre. The data set doesn't list the name of the book but has a lot of details about its sales and popularity.
