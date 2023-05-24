@@ -1,0 +1,115 @@
+------------------------------------------------------------------------
+
+# DataSet Introduction/ Primary Question 
+
+### This data set is from the Corgis data set website and it is a csv file that contains information about e-book sales. I was interested in looking at author revenue across publisher companies. My primary question is which publishing group pays their authors the best? I did this by first looking into publisher type and then following that by going deeper and looking at publishing group. 
+
+# Code 
+
+## Download Libraries 
+
+```{r}
+library(tidyverse)
+#tidyverse does include ggplot2
+library(ggplot2)
+#library that was included in sample for density plots 
+library(dplyr)
+```
+
+## Read in CSV File 
+
+```{r}
+publishersdataset_df <- read_csv("dataset/publishersdataset.csv")
+```
+
+## Question #1 Which publisher type gives author the highest daily revenue 
+
+```{r}
+
+#makes a table that gives the mean daily author revenue per publisher type
+publishersdataset_df %>% 
+  group_by(publisher.type)%>% 
+  summarize(
+      mean_daily_author_revenue = mean(`daily_average.author_revenue`)
+  ) %>%
+
+#creates the barplot from the table with the publisher type as the x axis and y as mean daily author revenue
+  ggplot() + 
+  geom_bar(
+    mapping = aes(x = publisher.type, y= mean_daily_author_revenue),
+    stat= "identity", fill = "lightblue", position = position_dodge())+ 
+  
+#label the x and y axis and title
+    labs(
+  x= "publisher type", 
+  y = "mean daily author revenue",
+  title = "The Mean Daily Author Revenue by Publisher Type"
+  ) + 
+  
+#rotates the x axis text 90 degrees so that it is vertical
+  theme(axis.text.x= element_text(size=10,angle=90, hjust=1)
+            )
+
+#saves data into a png file called datavis1
+ggsave("datavis1.png", width = 5, height = 5, 
+    path ="../plots" )
+```
+
+### Answer #1: The mean daily author revenue is highest for publishing groups under amazon but surprisingly second highest is for indie publishing types instead of the big five publishing groups. 
+
+## Question #2 Which publisher pays the best relative to their own revenue? 
+
+### I wanted to explore the difference between amazon and the big five more after finding out the answer to the previous question. I decided to look at daily author and publisher revenue depending on where they are sold and since most single author and indie publishers use a bigger publisher such as Amazon to sell their work, this chart is just comparing mostly Amazon, the big five, and small medium publishers. Th
+
+I excluded publisher and author revenue that exceeded 100 because very little of the density was going beyond that and the density plot would be too stretched in the x axis making it harder to see and analyze.
+
+```{r}
+
+#this dataset is filtering out the publisher and author revenue that exceeds 100
+publishersdataset_df %>% 
+  filter(daily_average.publisher_revenue < 100 & daily_average.author_revenue < 100 )%>%
+  ggplot()  + 
+  
+#adds the labels on each density plot
+  annotate("text", x=45, y= 0.04, label= "publisher", parse= TRUE, size=2.5, color = "blue") + 
+  annotate("text", x=22, y= 0.065, label= "author", parse= TRUE, size=2.5, color = "purple") +
+
+#makes a density plot for both publisher revenue and author revenue
+ geom_density(aes(x=daily_average.publisher_revenue), fill="lightblue", color = "blue", alpha = 0.8)  + 
+   geom_density(aes(x=daily_average.author_revenue),fill="pink", color = "purple", alpha = 0.8)+
+ 
+#adds the x axis and y axis labels 
+  labs(x="revenue", y = "density") +
+ 
+# adds the table title 
+  ggtitle("Distribution of Publisher vs Author Revenue ")  +
+  
+#makes a density ploy for each publisher 
+facet_wrap(~sold_by) 
+
+#saves data into a png called datavis2
+ggsave("datavis2.png", width = 8, height = 5, 
+   path ="../plots" )
+  
+```
+
+### Answer #2: The answer here is that relative to their own revenue Amazon Digital Services and Hachette Book Group(big five) pay the best while Random House Mondadori(big five) and Cengage Learning(small/medium) pay the worst. 
+
+## Implications/Future Questions
+
+#### The implications for this project is that authors need to do lots of research before signing with a publisher. As this data shows, although a publisher might be a top 5 publisher, they might still pay worse then other publishers. It is worth looking into indie publishers as they might pay more money then expected. Future questions I could look into with this data set is whether popularity has a large affect on author revenue. In this data set there is information on book ranking, average rating, and number of rating which could give us insight into the popularity. Also, future directions also include adding a confidence interval and doing more statistical analysis in order to provide additional evidence for my answers. 
+
+# Citations 
+
+1.  Fall foR Visualization Series
+
+    1.   [Visualizing Continuous Variables](https://media.ucsf.edu/media/Fall%20FoR%20Visualizations%3A%20Visualizing%20Continuous%20Variables%20with%20R!/1_8zdnkngn)
+    2.  [Visualizing Categorical Variables](https://media.ucsf.edu/media/Fall%20FoR%20Visualizations%3A%20Visualizing%20Categorical%20Variables%20with%20R!/1_y0wt1d7b)
+
+2.  Corgis Data Set - Publishers
+
+    <https://corgis-edu.github.io/corgis/csv/publishers/>
+
+3.  Density Plot <https://r-graph-gallery.com/density-plot.html>
+
+4.  BarGraph <https://r-graph-gallery.com/barplot.html>
